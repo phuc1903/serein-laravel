@@ -20,6 +20,8 @@ class DatabaseSeeder extends Seeder
             ProductsTableSeeder::class,
             OrdersTableSeeder::class,
             FavoriteTableSeeder::class,
+            VoucherTableSeeder::class,
+            VouchersUserTableSeeder::class,
         ]);
     }
 }

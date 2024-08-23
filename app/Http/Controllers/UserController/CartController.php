@@ -37,6 +37,7 @@ class CartController
      */
     public function store(Request $request)
     {
+        // return response()->json($request);
         $product = Product::findOrFail($request->product_id);
         // return response()->json($request);
 
@@ -103,8 +104,9 @@ class CartController
         }
 
         $newCarts = session()->get('carts');
+        $totalQuantity = array_sum(array_column($newCarts, 'quantity'));
 
-        return response()->json(['success' => true, 'message' => "Xóa sản phẩm thành công", "newCarts" => $newCarts]);
+        return response()->json(['success' => true, 'message' => "Xóa sản phẩm thành công", "newCarts" => $newCarts, 'totalQuantity' => $totalQuantity]);
     }
 
 

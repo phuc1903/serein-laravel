@@ -170,34 +170,36 @@ $(document).ready(function () {
     
         inputQuantity.val(quantity);
     
-        $.ajax({
-            url: route,
-            method: "POST",
-            data: {
-                _token: $('meta[name="csrf-token"]').attr('content'),
-                product_id: productId,
-                quantity: quantity
-            },
-            success: function(response) {
-                if (response.error) {
-                    Swal.fire({
-                        title: response.error,
-                        icon: 'error',
-                        confirmButtonColor: '#3085d6',
-                        confirmButtonText: 'Ok',
-                        customClass: {
-                            popup: 'swal2-custom-size',
-                            text: "swal2-text-height",
-                        }
-                    });
-                } else {
-                    $(element).closest('.product__item').find('.price__value').text(response.totalPriceProduct);
-                    $('.totalprice .price').text(response.totalPrice);
-                    $('.totalprice .price-total').text(response.totalCartPrice);
-                    $('.totalQuantityCart').html("(" + response.totalQuantityCart +")");
+        if(route) {
+            $.ajax({
+                url: route,
+                method: "POST",
+                data: {
+                    _token: $('meta[name="csrf-token"]').attr('content'),
+                    product_id: productId,
+                    quantity: quantity
+                },
+                success: function(response) {
+                    if (response.error) {
+                        Swal.fire({
+                            title: response.error,
+                            icon: 'error',
+                            confirmButtonColor: '#3085d6',
+                            confirmButtonText: 'Ok',
+                            customClass: {
+                                popup: 'swal2-custom-size',
+                                text: "swal2-text-height",
+                            }
+                        });
+                    } else {
+                        $(element).closest('.product__item').find('.price__value').text(response.totalPriceProduct);
+                        $('.totalprice .price').text(response.totalPrice);
+                        $('.totalprice .price-total').text(response.totalCartPrice);
+                        $('.totalQuantityCart').html("(" + response.totalQuantityCart +")");
+                    }
                 }
-            }
-        });
+            });
+        }
     
         return quantity;
     }

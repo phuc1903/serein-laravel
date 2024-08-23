@@ -4,18 +4,11 @@
         <div class="grid wide summary__box">
             <div class="row">
                 <div class="col l-6 summary-images">
-                    <img src="{{ asset('storage/'.$product->image) }}" alt="" class="img-main"
-                        onclick="handleThumbnailClick(event)">
-                    {{-- <div class="listimg listimg-sizes">
-                        <img src="asset/img/bong-tai-bac-3.png" alt="" class="thumbnails-item"
-                            onclick="changeImage(this)">
-                        <img src="asset/img/bong-tai-bac.png" alt="" class="thumbnails-item"
-                            onclick="changeImage(this)">
-                        <img src="asset/img/bong-tai-bac-2.png" alt="" class="thumbnails-item"
-                            onclick="changeImage(this)">
-                        <img src="asset/img/bong-tai-bac-3.png" alt="" class="thumbnails-item"
-                            onclick="changeImage(this)">
-                    </div> --}}
+                    @if(Str::contains($product->image, 'product_images'))
+                        <img class="img-main" src="{{ asset('storage/' . $product->image) }}">
+                    @else
+                        <img class="img-main" src="{{ asset('img/' . $product->image) }}">
+                    @endif
                 </div>
 
                 <div class="col l-6 summary-content">
@@ -29,23 +22,14 @@
                     <div class="summary-content-desciption">
                         {{ $product->description }}
                     </div>
-                    <div class="summary-content-sizes">
-                        <span class="summary-content-size">
-                            <span>size</span>
-                            <div>
-                                <p>X</p>
-                                <p>L</p>
-                                <p>M</p>
-                            </div>
-                        </span>
-                    </div>
-                    <form action="{{ route('cart.store', ['product_id' => $product->id] ) }}" class="detailquantity" method="post">
-                        @csrf
+                    
+                    <div class="detailquantity">
                         <div class="detailquantity__quantity">
                             <!-- <p class="detailquantity__quantity-text">2 in stock</p> -->
                             <div class="detailquantity__quantity__updown">
                                 <div class="quantity__minus detail-pre pre-quantity">-</div>
                                 <input 
+                                    id="quantityProductDetail"
                                     name="quantity"
                                     type="text" value="1"
                                     min="1"
@@ -58,11 +42,9 @@
 
                         </div>
                         <div class="detailquantity__cart">
-                            <a href="">
-                                <button type="button" class="detailquantity__buy">Mua ngay</button>
-                            </a>
+                            <x-buttons.add-to-cart-icon class="detailquantity__buy BuyProduct" productId="{{ $product->id }}" route="{{ route('cart.store')}}" children='Mua ngay'/>
                             {{-- <a id="add-cart"> --}}
-                            <button type="submit" class="detailquantity__addtocart add-cart">Thêm giỏ hàng</button>
+                            <x-buttons.add-to-cart-icon class="detailquantity__addtocart addProductCart" productId="{{ $product->id }}" route="{{ route('cart.store')}}" children='Thêm giỏ hàng'/>
                             {{-- </a> --}}
                         </div>
                         <div class="Category">
