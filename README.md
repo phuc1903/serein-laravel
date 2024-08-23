@@ -43,7 +43,7 @@ This project is built using the following technologies:
 Clone the project
 
 ```bash
-git clone git@github.com:phuc1903/serein-fullstack.git
+git clone git@github.com:phuc1903/serein-laravel.git
 ```
 
 Go to the project directory
@@ -74,5 +74,5 @@ php artisan migrate
 ## Start the server
 
 ```bash
-php artisan server
+php artisan serve
 ```
