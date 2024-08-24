@@ -3,6 +3,9 @@
 namespace App\Http\Controllers\AdminController;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\StoreVoucherRequest;
+use App\Http\Requests\UpdateVoucherRequest;
+use App\Models\Voucher;
 use Illuminate\Http\Request;
 
 class VoucherController extends Controller
@@ -12,7 +15,8 @@ class VoucherController extends Controller
      */
     public function index()
     {
-        return view('admin.vouchers.list');
+        $vouchers = Voucher::orderBy('created_at', 'desc')->orderBy('id', 'desc')->get();
+        return view('admin.vouchers.list', ['vouchers' => $vouchers]);
     }
 
     /**
@@ -26,9 +30,13 @@ class VoucherController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    public function store(Request $request)
+    public function store(StoreVoucherRequest $request)
     {
-        //
+        $data = $request->validated();
+        
+        Voucher::create($data);
+
+        return redirect()->back()->with('success', 'Thêm voucher thành công');
     }
 
     /**
@@ -42,17 +50,24 @@ class VoucherController extends Controller
     /**
      * Show the form for editing the specified resource.
      */
-    public function edit(string $id)
+    public function edit(Voucher $voucher)
     {
-        return view('admin.vouchers.edit');
+        // $statusVouchers = Voucher::getStatusOptions();
+
+        // $statusVouchers = array_diff($statusVouchers, [$voucher->status]);
+        return view('admin.vouchers.edit', ['voucher' => $voucher]);
     }
 
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, string $id)
+    public function update(UpdateVoucherRequest $request, Voucher $voucher)
     {
-        //
+        $data = $request->validated();
+
+        $voucher->update($data);
+
+        return redirect()->back()->with('success', 'Sửa voucher thành công');
     }
 
     /**

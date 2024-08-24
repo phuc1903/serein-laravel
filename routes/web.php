@@ -44,6 +44,8 @@ Route::middleware(['checkAuth', 'verified'])->group(function() {
 
     // Favorite
 });
+
+// Favorite
 Route::controller(FavoriteController::class)->group(function() {
     Route::get('/favorite/{user}', 'index')->middleware('checkAuth')->name('favorite');
     Route::post('/favorite', 'store')->name('favorite-store');
@@ -51,7 +53,6 @@ Route::controller(FavoriteController::class)->group(function() {
 });
 
 // Home
-// Route::get('/', [HomeController::class, 'index'])->middleware('verified')->name('home');
 Route::get('/', [HomeController::class, 'index'])->middleware('noCache')->name('home');
 
 // Shop
@@ -75,6 +76,7 @@ Route::middleware('noCache')->group(function(){
 // Article
 Route::get('/about', [AboutController::class, 'index'])->name('about');
 Route::get('/contact', [ContactController::class, 'index'])->name('contact');
+Route::post('/contact', [ContactController::class, 'store'])->name('contact.store');
 
 // Auth
 Route::controller(AuthController::class)->group(function() {

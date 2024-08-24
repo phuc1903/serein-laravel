@@ -13,7 +13,7 @@ return new class extends Migration
     {
         Schema::create('vouchers', function (Blueprint $table) {
             $table->id();
-            $table->string('code', 255)->nullable();
+            $table->string('code', 255)->nullable()->unique();
             $table->enum('discount_type', ['percent', 'amount'])->nullable();
             $table->decimal('discount_value', 10, 2)->nullable();
             $table->integer('discount_max')->nullable(); 

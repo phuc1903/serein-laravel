@@ -46,7 +46,7 @@
                                     <div class="information__quantity">
                                         <div class="choice__price">
                                             @php
-                                                $totalPriceProduct = $product['price'] * $product['quantity'];
+                                                $totalPriceProduct = intval($product['price']) * intval($product['quantity']);
                                             @endphp
                                             <div class="price__value">{{ number_format($totalPriceProduct) }}</div>
                                             <div class="price__usa">VNĐ </div>
@@ -92,8 +92,9 @@
                                             $totalPrice = 0;
                                             if ($products != null) {
                                                 foreach ($products as $product) {
-                                                    $totalPriceProduct =
-                                                        ($product['price'] ?? 0) * $product['quantity'];
+                                                    $price = intval($product['price'] ?? 0);
+                                                    $quantity = intval($product['quantity'] ?? 0);
+                                                    $totalPriceProduct = $price * $quantity;
                                                     $totalPrice += $totalPriceProduct;
                                                 }
                                             }

@@ -183,12 +183,13 @@ $('.addProductCart').click(function(e) {
     e.preventDefault();
     const route = $(this).data('route');
     const productId = $(this).data('product-id');
-    let quantity = 0; 
-    if(Number($('#quantityProductDetail').val()) == 1) {
-        quantity = Number($(this).data('quantity')) ? Number($(this).data('quantity')) : 1 
-    }else {
+    let quantity;
+    if (Number($('#quantityProductDetail').val()) === 1) {
         quantity = Number($('#quantityProductDetail').val());
+    } else {
+        quantity = Number($(this).data('quantity')) ? Number($(this).data('quantity')) : 1;
     }
+
     const totalQuantityCart = $('#totalQuantityCart');
 
     $.ajax({
@@ -226,7 +227,7 @@ $('.BuyProduct').click(function(e) {
     e.preventDefault();
     const route = $(this).data('route');
     const productId = $(this).data('product-id');
-    const quantity = $(".quantity-input").length ? $('.quantity-input').val() : 1;
+    const quantity = Number($(".quantity-input").length) ? Number($('.quantity-input').val()) : 1;
 
     $.ajax({
         url: route,
@@ -234,25 +235,10 @@ $('.BuyProduct').click(function(e) {
         data: {
             _token: $('meta[name="csrf-token"]').attr('content'),
             product_id: productId,
-            quantity: quantity
+            quantity: Number(quantity)
         },
         success: function(response) {
             if(response.success) window.location.href = "/cart";     
-            // totalQuantityCart.text(response.totalQuantityCart)
-            // if(response.success) {
-            //     toastr.options = {
-            //         "progressBar": true,
-            //         "closeButton": true,
-            //     }
-            //     toastr.success(response.success, "Thành công", {timeOut: 4000 });
-            // }
-            // else {
-            //     toastr.options = {
-            //         "progressBar": true,
-            //         "closeButton": true,
-            //     }
-            //     toastr.eror(response.success, "Thất bại", {timeOut: 4000 });
-            // }
         },
         error: function(xhr) {
             console.log(xhr.responseText); // Để xem lỗi

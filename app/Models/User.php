@@ -65,6 +65,6 @@ class User extends Authenticatable implements MustVerifyEmail, CanResetPassword
 
     public function vouchers():BelongsToMany
     {
-        return $this->belongsToMany(Voucher::class, 'voucher_id');
+        return $this->belongsToMany(Voucher::class, 'vouchers_user');
     }
 }

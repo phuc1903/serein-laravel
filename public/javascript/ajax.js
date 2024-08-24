@@ -160,10 +160,8 @@ $(document).ready(function () {
                         text: "swal2-text-height",
                     }
                 }).then((result) => {
-                    if (result.isConfirmed) {
-                        quantity = 1;
-                        inputQuantity.val(quantity);
-                    }
+                    quantity = 1;
+                    inputQuantity.val(quantity);
                 });
             }
         }

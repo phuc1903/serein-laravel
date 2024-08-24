@@ -31,10 +31,11 @@
                                 <a href="{{ route('info') }}"><div class="right_icon-chirld-item">Hồ sơ</div></a>
                                 <a href="{{ route('favorite', Auth::user()) }}"><div class="right_icon-chirld-item">Sản phẩm yêu thích</div></a>
                                 <a href="{{ route('order.index') }}"><div class="right_icon-chirld-item">Lịch sử mua hàng</div></a>
-                                <a href="{{ route('password.request') }}"><div class="right_icon-chirld-item">Quên mật khẩu</div></a>
+                                <a href="{{ route('change-password', Auth::user()) }}"><div class="right_icon-chirld-item">Đổi mật khẩu</div></a>
                                 <a href="{{ route('logout') }}"><div class="right_icon-chirld-item">Đăng xuất</div></a>
-                            @endauth
+                                @endauth
                             @guest
+                                <a href="{{ route('password.request') }}"><div class="right_icon-chirld-item">Quên mật khẩu</div></a>
                                 <a href="{{ route('login') }}"><div class="right_icon-chirld-item">Đăng nhập</div></a>
                                 <a href="{{ route('register') }}"><div class="right_icon-chirld-item">Đăng ký</div></a>
                             @endguest
@@ -46,7 +47,8 @@
                             $carts = session()->get('carts', []);
                             $totalQuantity = 0;
                             foreach ($carts as $item) {
-                                $totalQuantity += $item['quantity'];
+                                $quantity = intval('quantity');
+                                $totalQuantity += $quantity;
                             }
                         @endphp
                         <span id="totalQuantityCart" class="totalQuantityCart">({{ $totalQuantity }})</span>

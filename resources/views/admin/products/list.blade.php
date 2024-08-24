@@ -70,7 +70,6 @@
                         </tr>
                     @endforeach
                 </tbody>
-
             </table>
             <x-links.paginate :data="$products"/>
         </div>

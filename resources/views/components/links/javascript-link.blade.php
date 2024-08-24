@@ -10,8 +10,9 @@
 
 <!-- Your custom JavaScript file -->
 <script src=" {{ asset('javascript/ajax.js') }}"></script>
-<script src=" {{ asset('javascript/cart.js') }}"></script>
 <script src=" {{ asset('javascript/favorite.js') }}"></script>
+<script src=" {{ asset('javascript/voucher.js') }}"></script>
+<script src=" {{ asset('javascript/cart.js') }}"></script>
 
 {{-- <script src=" {{ asset('javascript/loadData.js') }}"></script> --}}
 

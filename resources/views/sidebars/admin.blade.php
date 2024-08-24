@@ -26,11 +26,11 @@
 
             {{-- <x-links.sidebar-admin href="{{ route('admin.banner.list') }}" :active="request()->is('admin/banner*')">
                 Quản lí banner
-            </x-links.sidebar-admin>
+            </x-links.sidebar-admin> --}}
 
             <x-links.sidebar-admin href="{{ route('admin.voucher.list') }}" :active="request()->is('admin/voucher*')">
                 Quản lí voucher
-            </x-links.sidebar-admin> --}}
+            </x-links.sidebar-admin>
 
             <x-links.sidebar-admin href="{{ route('admin.order.list') }}" :active="request()->is('admin/order*')">
                 Quản lí đơn hàng

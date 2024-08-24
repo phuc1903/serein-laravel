@@ -11,14 +11,13 @@
 
     <div class="email-container">
         <div class="header">
-            <img src="{{ asset('img/logo3.png') }}" alt="Logo">
-            <h1> {{ env("APP_NAME") }}</h1>
+            <h1> {{ config('app.name') }}</h1>
         </div>
         <div class="content">
             {{ $slot }}
         </div>
         <div class="footer">
-            <p>&copy; 2024 Your Website Name. All rights reserved.</p>
+            <p>&copy; 2024 Serin Jewelry. All rights reserved.</p>
         </div>
     </div>
 
