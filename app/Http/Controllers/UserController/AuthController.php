@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Jobs\SendCreateAccountMailJob;
 use App\Models\Favorite;
 use App\Models\User;
+use App\Models\Voucher;
 use App\Models\VouchersUser;
 use Illuminate\Auth\Events\PasswordReset;
 use Illuminate\Auth\Events\Registered;
@@ -87,9 +88,13 @@ class AuthController extends Controller
             'password' => Hash::make($request->password)
         ]);
 
-        // if($user) {
-        //     VouchersUser::create();
-        // }
+        if($user) {
+            $voucherWhenRegister = Voucher::where('trigger_event', 'register')->first();
+            VouchersUser::create([
+                'user_id' => $user->id,
+                'voucher_id' => $voucherWhenRegister->id
+            ]);
+        }
 
         dispatch(new SendCreateAccountMailJob($user));
 

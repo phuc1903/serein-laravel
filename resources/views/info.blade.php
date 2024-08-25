@@ -74,6 +74,9 @@
                 <div class="main__admin-btn-item">
                     <a href="{{ route('change-password', $user) }}" class="btn-admin">Đổi mật khẩu</a>
                 </div>
+                <div class="main__admin-btn-item">
+                    <a href="{{ route('voucher') }}" class="btn-admin">Voucher của bạn</a>
+                </div>
             </div>
         </form>
     </div>

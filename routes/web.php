@@ -22,6 +22,7 @@ use App\Http\Controllers\UserController\AuthController;
 use App\Http\Controllers\UserController\DetailController;
 use App\Http\Controllers\UserController\InfoController;
 use App\Http\Controllers\UserController\OrderController;
+use App\Http\Controllers\UserController\VoucherController;
 
 // Middleware Auth
 
@@ -50,6 +51,15 @@ Route::controller(FavoriteController::class)->group(function() {
     Route::get('/favorite/{user}', 'index')->middleware('checkAuth')->name('favorite');
     Route::post('/favorite', 'store')->name('favorite-store');
     Route::delete('/favorite/{favorite}', 'destroy')->middleware('checkAuth')->name('favorite.destroy');
+});
+
+
+// Vouchers
+Route::middleware('checkAuth')->group(function() {
+    Route::controller(VoucherController::class)->group(function() {
+        Route::get('/voucher', 'index')->name('voucher');
+        Route::delete('/voucher', 'destroy')->name('voucher.destroy');
+    });
 });
 
 // Home

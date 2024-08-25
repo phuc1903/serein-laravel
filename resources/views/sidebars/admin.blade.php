@@ -53,6 +53,10 @@
             <x-links.sidebar-admin href="{{ route('favorite', Auth::user()) }}" :active="request()->is('favorite*')">
                 Danh sách sản phẩm yêu thích
             </x-links.sidebar-admin>
+
+            <x-links.sidebar-admin href="{{ route('voucher') }}" :active="request()->is('voucher*')">
+                Danh sách voucher của bạn
+            </x-links.sidebar-admin>
         @endauth
 
 
