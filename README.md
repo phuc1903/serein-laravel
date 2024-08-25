@@ -20,9 +20,6 @@ Insert gif or link to demo
 This project is built using the following technologies:
 
 - **Laravel 11**: A PHP framework for building robust web applications.
-- **Inertia.js**: A framework that allows you to create modern single-page applications (SPAs) using classic server-side routing and controllers.
-- **React 18**: A JavaScript library for building user interfaces, providing fast and interactive components.
-- **Vite**: A modern build tool that offers fast development and optimized production builds.
 
 ## Requirements
 - Generated ssh key
@@ -35,7 +32,7 @@ This project is built using the following technologies:
 
 - [nodejs min v.20](https://nodejs.org/en/download/prebuilt-installer)
 
-- Please also check [Laravel](https://laravel.com/docs/11.x) and [Inertia](https://inertiajs.com/) requirements
+- Please also check [Laravel](https://laravel.com/docs/11.x)
 
 
 ## Run Locally
