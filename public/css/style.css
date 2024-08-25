@@ -64,7 +64,7 @@ html {
 
 .container {
     display: block;
-    padding: 120px 0;
+    padding: 60px 0;
     width: 100%;
     height: auto;
 }
@@ -1711,6 +1711,7 @@ body {
 
 .manager-main {
     border-bottom: 0px;
+    overflow-x: auto;
 }
 
 .manager-table {
@@ -1720,6 +1721,7 @@ body {
 
 .manager-header th {
     font-size: 1.6rem;
+    text-wrap: nowrap;
 }
 
 .manager-table th,
@@ -1847,4 +1849,31 @@ body {
 
 .forgot-password:hover {
     color: var(--hover-color);
+}
+
+/* Badges  */
+
+.badges {
+    padding: 6px 12px;
+    text-wrap: nowrap;
+    background-color: var(--white-color);
+    border-radius: 8px;
+    color: var(--white-color);
+    cursor: pointer;
+}
+
+.badges.success {
+    background-color: #2A9D8F;
+}
+
+.badges.error {
+    background-color: crimson;
+}
+
+.badges.info {
+    background-color: darkkhaki;
+}
+
+.badges.warning {
+    background-color: yellow;
 }

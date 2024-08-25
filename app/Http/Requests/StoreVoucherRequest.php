@@ -22,7 +22,7 @@ class StoreVoucherRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'code' => 'nullable|unique:voucher|min:3|max:50',
+            'code' => 'nullable|unique:vouchers|min:3|max:50',
             'discount_type' => "required|string|min:3|max:10",
             'discount_value' => "required|numeric|min:1",
             'discount_max' => "nullable|numeric|min:3",
@@ -30,6 +30,9 @@ class StoreVoucherRequest extends FormRequest
             'user_count' => 'required|numeric|min:1',
             'day_start' => 'nullable|date|before_or_equal:day_end',
             'day_end' => 'nullable|date|after_or_equal:day_start',
+            'is_active' => 'boolean|',
+            'trigger_event' => 'required|min:3',
+            'description' => 'min:3|max:255'
         ];
     }
 
@@ -59,6 +62,11 @@ class StoreVoucherRequest extends FormRequest
             'day_start.before_or_equal' => 'Ngày bắt đầu phải trước hoặc bằng ngày kết thúc',
             'day_end.date' => 'Ngày kết thúc không hợp lệ',
             'day_end.after_or_equal' => 'Ngày kết thúc phải sau hoặc bằng ngày bắt đầu',
+            'is_active.boolean' => 'Chỉ được chọn 1 trong 2',
+            'trigger_event.required' => 'Vui lòng nhập loại của voucher',
+            'trigger_event.min' => 'Vui lòng nhập ít nhất 3 ký tự',
+            'description.min' => 'Vui lòng nhập ít nhất 3 ký tự',
+            'description.max' => 'Vui lòng nhập nhiều nhất 255 ký tự',
         ];
     }
 }

@@ -17,6 +17,9 @@ class Voucher extends Model
         "discount_max",
         "quantity",
         "user_count",
+        "is_active",
+        "trigger_event",
+        "description",
         "day_start",
         "day_end",
     ];

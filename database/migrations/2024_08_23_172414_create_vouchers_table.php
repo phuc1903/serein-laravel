@@ -19,6 +19,9 @@ return new class extends Migration
             $table->integer('discount_max')->nullable(); 
             $table->integer('quantity')->default(50);
             $table->integer('user_count')->nullable();
+            $table->boolean('is_active')->default(true);
+            $table->string('trigger_event')->nullable();
+            $table->string('description')->nullable();
             $table->timestamp('day_start')->nullable();
             $table->timestamp('day_end')->nullable();
             $table->timestamps();

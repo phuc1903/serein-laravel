@@ -23,7 +23,27 @@
                         <td class="manager-price"><span>{{ $order->phone }}</span></td>
                         <td class="manager-name"><span>{{ $order->address }}</span></td>
                         <td class="manager-name"><span>{{ $order->payment_method }}</span></td>
-                        <td class="manager-name"><span>{{ $order->status }}</span></td>
+                        <td class="manager-name">
+                            <span>
+                                @php
+                                    switch(strtolower($order->status)) {
+                                        case 'Giao hàng thành công':
+                                            $type = 'success';
+                                            break;
+                                        case 'Đã hủy':
+                                            $type = 'error';
+                                            break;
+                                        case 'Đang xét duyệt':
+                                            $type = 'info';
+                                            break;
+                                        default:
+                                            $type = 'success';
+                                            break;
+                                    }
+                                @endphp
+                                <x-buttons.badges type="{{ $type }}" title="{{ $order->status }}" />
+                            </span>
+                        </td>
                         <td class="manager-name"><span>{{ number_format($order->totalPrice) }}</span></td>
                         <td class="manager-name"><span>{{ $order->created_at }}</span></td>
                         {{-- <td class="manager-createDay"><span>{{ $order->updated_at }}</span></td> --}}

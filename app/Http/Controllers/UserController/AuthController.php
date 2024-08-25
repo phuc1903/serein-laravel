@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Jobs\SendCreateAccountMailJob;
 use App\Models\Favorite;
 use App\Models\User;
+use App\Models\VouchersUser;
 use Illuminate\Auth\Events\PasswordReset;
 use Illuminate\Auth\Events\Registered;
 use Illuminate\Foundation\Auth\EmailVerificationRequest;
@@ -85,6 +86,10 @@ class AuthController extends Controller
             'email' => $request->email,
             'password' => Hash::make($request->password)
         ]);
+
+        // if($user) {
+        //     VouchersUser::create();
+        // }
 
         dispatch(new SendCreateAccountMailJob($user));
 

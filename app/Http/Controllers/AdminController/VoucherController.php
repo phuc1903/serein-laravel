@@ -6,7 +6,10 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\StoreVoucherRequest;
 use App\Http\Requests\UpdateVoucherRequest;
 use App\Models\Voucher;
+use App\Models\VouchersUser;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Storage;
 
 class VoucherController extends Controller
 {
@@ -15,7 +18,7 @@ class VoucherController extends Controller
      */
     public function index()
     {
-        $vouchers = Voucher::orderBy('created_at', 'desc')->orderBy('id', 'desc')->get();
+        $vouchers = Voucher::orderBy('created_at', 'desc')->orderBy('id', 'desc')->paginate(4);
         return view('admin.vouchers.list', ['vouchers' => $vouchers]);
     }
 
@@ -70,11 +73,33 @@ class VoucherController extends Controller
         return redirect()->back()->with('success', 'Sửa voucher thành công');
     }
 
+    public function CheckVoucherUser(Request $request)
+    {
+        $voucherId = $request->input('id');
+        $vouchersUser = VouchersUser::where('voucher_id', $voucherId)->get();
+        
+        if ($vouchersUser->isEmpty()) {
+            return response()->json(['exists' => false, 'test' => $voucherId]);
+        } else {
+            return response()->json(['exists' => true, 'vouchersUser' => $vouchersUser, 'test' => $voucherId]);
+        }
+    }
+
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(string $id)
+    public function destroy(Voucher $voucher)
     {
-        //
+        DB::transaction(function() use ($voucher) {
+            $vouchersUser = VouchersUser::where('voucher_id', $voucher->id);
+
+            if ($vouchersUser->exists()) {
+                $vouchersUser->delete();
+            }
+
+            $voucher->delete();
+        });
+
+        return response()->json(['message' => 'Xóa voucher thành công']);
     }
 }

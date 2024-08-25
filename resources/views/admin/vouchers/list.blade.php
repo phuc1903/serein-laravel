@@ -10,11 +10,14 @@
             <table class="manager-table" style="width: 100%;">
                 <tr class="manager-header"style="width: 100%;">
                     <th>code</th>
-                    <th>discount_type</th>
-                    <th>discount_value</th>
-                    <th>discount_max</th>
-                    <th>quantity</th>
-                    <th>user_count</th>
+                    <th>Kiểu giảm giá</th>
+                    <th>Giá trị giảm giá</th>
+                    <th>Giảm giá cao nhất</th>
+                    <th>Số lượng voucher</th>
+                    <th>Số lượng mỗi tài khoản</th>
+                    <th>Sử dụng</th>
+                    <th>Loại voucher</th>
+                    <th>Mô tả</th>
                     <th>Ngày bắt đầu</th>
                     <th>Ngày kết thúc</th>
                     <th>Hành động</th>
@@ -34,10 +37,23 @@
                             </td>
                             <td class="manager-price">
                                 <span>{{ $vch->discount_max }}</span>
-                            </td><td class="manager-price">
+                            </td>
+                            <td class="manager-price">
                                 <span>{{ $vch->quantity }}</span>
-                            </td><td class="manager-price">
+                            </td>
+                            <td class="manager-price">
                                 <span>{{ $vch->user_count }}</span>
+                            </td>
+                            <td class="manager-price">
+                                <span>
+                                    <x-buttons.badges type="{{ $vch->user_count ? 'success' : 'error' }}" title="{{ $vch->user_count ? 'Còn sử dụng' : 'Hết sử dụng' }}"/>
+                                </span>
+                            </td>
+                            <td class="manager-price">
+                                <span>{{ $vch->trigger_event }}</span>
+                            </td>
+                            <td class="manager-price">
+                                <span>{{ $vch->description }}</span>
                             </td>
                             <td class="manager-updateDay">
                                 <span>{{ $vch->day_start }}</span>
@@ -46,11 +62,17 @@
                                 <span>{{ $vch->day_end }}</span>
                             </td>
                             <td class="manager-action">
-                                <a href="{{ route('admin.voucher.destroy', $vch) }}" class="bill_delete">
-                                    <div class="manager-action-item">
-                                        <i class="fa-solid fa-trash"></i>
-                                    </div>
-                                </a>
+                                <a 
+                                    data-id="{{ $vch->id }}" 
+                                    data-route-delete="{{ route('admin.voucher.destroy', $vch->id) }}"  
+                                    data-route-check="{{ route('admin.voucher.checkVoucherUser') }}"
+                                    data-confirm="Voucher này đã có khách hàng sử dụng. Bạn có muốn xóa không ?"
+                                    class="bill_delete delete-button">
+                                        <meta name="csrf-token" content="{{ csrf_token() }}">
+                                        <div class="manager-action-item">
+                                            <i class="fa-solid fa-trash"></i>
+                                        </div>
+                                    </a>
                                 <a href="{{ route('admin.voucher.edit', $vch)}}" class="manager-action-item bill_detail">
                                     <div class="manager-action-item">
                                         <i class="fa-regular fa-pen-to-square"></i>
@@ -61,7 +83,7 @@
                     @endforeach
                 </tbody>
             </table>
-            <hr>
+            <x-links.paginate :data="$vouchers"/>
         </div>
     </div>
 

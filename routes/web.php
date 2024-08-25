@@ -177,6 +177,7 @@ Route::middleware(['admin', 'verified', 'noCache'])->group(function() {
         Route::get('/admin/voucher/{voucher}/edit', 'edit')->name('admin.voucher.edit');
         Route::put('/admin/voucher/{voucher}', 'update')->name('admin.voucher.update');
         Route::delete('/admin/voucher/{voucher}', 'destroy')->name('admin.voucher.destroy');
+        Route::post('/admin/voucher/check-voucher-user', 'CheckVoucherUser')->name('admin.voucher.checkVoucherUser');
     });
     
     

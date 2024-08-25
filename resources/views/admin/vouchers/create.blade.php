@@ -82,6 +82,41 @@
 
             <div class="main__admin-inputs">
                 <div class="col l-6 main__admin-input-item">
+                    <label for="is_active">Hoạt động của voucher</label>
+                    <select class="@error('is_active') error @enderror" name="is_active" id="is_active"
+                        style="padding: 15px; border-radius: 8px;">
+                        <option value="1">Còn sử dụng</option>
+                        <option value="0">Hết sử dụng</option>
+                    </select>
+                    <div class="error">
+                        @error('is_active')
+                            {{ $message }}
+                        @enderror
+                    </div>
+                </div>
+            </div>
+            <div class="main__admin-inputs">
+                <div class="col l-6 main__admin-input-item">
+                    <label for="trigger_event">Loại voucher</label>
+                    <input class="@error('trigger_event') error @enderror" type="text" id="trigger_event" name="trigger_event"
+                        placeholder="Loại voucher (Sử dụng khi khách hàng đăng ký tài khoản, Sử dụng khi lần đầu mua hàng ...)" value="{{ old('triggerr_event') }}">
+                    <div class="error">
+                        @error('trigger_event')
+                            {{ $message }}
+                        @enderror
+                    </div>
+                </div>
+                <div class="col l-6 main__admin-input-item">
+                    <label for="description">Mô tả</label>
+                    <textarea class="@error('description') error @enderror" cols="44" rows="4"  type="text" id="description" name="description" placeholder="Nhập mô tả voucher">{{ old("description") }}</textarea>
+                    @error('description')
+                        <div class="error">{{ $message }}</div>
+                    @enderror
+                </div>
+            </div>
+
+            <div class="main__admin-inputs">
+                <div class="col l-6 main__admin-input-item">
                     <label for="day_start">Ngày bắt đầu</label>
                     <input class="@error('day_start') error @enderror" type="date" id="day_start" name="day_start" value="{{ old('day_start') }}">
                     <div class="error">
