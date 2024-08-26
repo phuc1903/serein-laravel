@@ -6,9 +6,9 @@
             <button class="addProduct" name="addProduct">Trở về hồ sơ</button>
         </a>
         <div class="manager-main">
-            <table class="manager-table" style="width: 100%;">
-                <tr class="manager-header"style="width: 100%;">
-                    <th>code</th>
+                <table class="manager-table" style="width: 100%;">
+                    <tr class="manager-header"style="width: 100%;">
+                        <th>code</th>
                     <th>Kiểu giảm giá</th>
                     <th>Giá trị giảm giá</th>
                     <th>Giảm giá cao nhất</th>
