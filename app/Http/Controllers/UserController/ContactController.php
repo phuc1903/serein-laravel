@@ -5,6 +5,7 @@ namespace App\Http\Controllers\UserController;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\StoreContactRequest;
 use App\Jobs\SendContactMailJob;
+use App\Jobs\SendFeedbackFormCustomersMailJob;
 use Illuminate\Http\Request;
 
 class ContactController extends Controller
@@ -18,6 +19,8 @@ class ContactController extends Controller
     public function store(StoreContactRequest $request)
     {
         $request->validated();
+        
+        dispatch(new SendFeedbackFormCustomersMailJob($request->email, $request->content));
 
         dispatch(new SendContactMailJob($request->email));
 

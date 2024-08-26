@@ -9,8 +9,6 @@ use App\Models\OrderDetail;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Storage;
-use Illuminate\Validation\Validator;
-use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\DB;
 
 
