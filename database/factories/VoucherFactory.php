@@ -33,11 +33,20 @@ class VoucherFactory extends Factory
                 $description = 'Voucher khuyến mãi đặc biệt.';
                 break;
         }
+
+        $discountType = $this->faker->randomElement(['percent', 'amount']);
+
+        $discountValue = $discountType === 'percent'
+            ? $this->faker->numberBetween(5, 50) // Nếu là phần trăm, giá trị từ 5% đến 50%
+            : $this->faker->numberBetween(10000, 1000000);
+
         return [
             'code' => $this->faker->unique()->bothify('VOUCHER-####'),
-            'discount_type' => $this->faker->randomElement(['percent', 'amount']),
-            'discount_value' => $this->faker->randomFloat(2, 5, 100),
-            'discount_max' => $this->faker->numberBetween(50, 500),
+            'discount_type' => $discountType,
+            'discount_value' => $discountValue,
+            'discount_max' => $discountType === 'percent' 
+                ? $this->faker->numberBetween(50000, 1000000) 
+                : null, 
             'quantity' => $this->faker->numberBetween(10, 100),
             'user_count' => $this->faker->numberBetween(1, 50),
             'is_active' => $this->faker->boolean(80),

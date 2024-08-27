@@ -65,9 +65,7 @@ class VoucherController extends Controller
      */
     public function update(UpdateVoucherRequest $request, Voucher $voucher)
     {
-        $data = $request->validated();
-
-        $voucher->update($data);
+        $voucher->update($request->validated());
 
         return redirect()->back()->with('success', 'Sửa voucher thành công');
     }

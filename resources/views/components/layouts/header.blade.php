@@ -47,7 +47,7 @@
                             $carts = session()->get('carts', []);
                             $totalQuantity = 0;
                             foreach ($carts as $item) {
-                                $quantity = intval('quantity');
+                                $quantity = $item['quantity'];
                                 $totalQuantity += $quantity;
                             }
                         @endphp

@@ -55,11 +55,12 @@ Route::controller(FavoriteController::class)->group(function() {
 
 
 // Vouchers
-Route::middleware('checkAuth')->group(function() {
-    Route::controller(VoucherController::class)->group(function() {
+Route::controller(VoucherController::class)->group(function() {
+    Route::middleware('checkAuth')->group(function() {
         Route::get('/voucher', 'index')->name('voucher');
         Route::delete('/voucher', 'destroy')->name('voucher.destroy');
     });
+    Route::post('/voucher', 'store')->name('voucher.apply');
 });
 
 // Home

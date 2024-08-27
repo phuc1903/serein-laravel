@@ -15,7 +15,7 @@ return new class extends Migration
             $table->id();
             $table->string('code', 255)->nullable()->unique();
             $table->enum('discount_type', ['percent', 'amount'])->nullable();
-            $table->decimal('discount_value', 10, 2)->nullable();
+            $table->integer('discount_value')->nullable();
             $table->integer('discount_max')->nullable(); 
             $table->integer('quantity')->default(50);
             $table->integer('user_count')->nullable();

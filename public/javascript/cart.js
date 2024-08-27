@@ -136,7 +136,31 @@ $('.choice__remove').click(function() {
                 },
                 success: function(data) {
                     if(data.success) {
-                        
+                        $(`.product__item[data-product-id="${productId}"]`).remove();
+                            var itemCount = data.newCarts.length;
+                            const voucher = sessionStorage.getItem('voucher'); // Lấy từ sessionStorage
+                            let carts = [
+                                ...Object.values(data.newCarts)
+                            ];
+                            $('#totalQuantityCart').text("(" + data.totalQuantity + ")");
+
+                            let priceProducts = 0;
+
+                            carts.forEach(cart => {
+                                priceProducts += Number(cart.quantity) * cart.price;
+                            });
+                            $(".total-price-product").text(priceProducts.toLocaleString('vi-VN'));
+
+                            let totalPrice = priceProducts + 18000; // Cộng phí giao hàng
+
+                            // Cập nhật tổng giá trị sau khi áp dụng voucher
+                            var finalTotal = updateTotalPrice(totalPrice, voucher);
+
+                            console.log(finalTotal);
+
+                            if(itemCount <= 0) {
+                                $('.cart-null').text('Giỏ hàng rỗng');
+                            }
                         Swal.fire({
                             title: data.message,
                             icon: 'success',
@@ -146,31 +170,7 @@ $('.choice__remove').click(function() {
                                 popup: 'swal2-custom-size',
                                 text: "swal2-text-height",
                             }
-                        }).then((result) => {
-                            $(`.product__item[data-product-id="${productId}"]`).remove();
-                            var itemCount = data.newCarts.length;
-                            let carts = [
-                                ...Object.values(data.newCarts)
-                            ];
-                            console.log(carts);
-                            
-                            $('#totalQuantityCart').text("(" + data.totalQuantity + ")");
-
-                            let priceProducts = 0;
-                            let totalPrice = 0;
-
-                            carts.forEach(cart => {
-                                priceProducts += Number(cart.quantity) * cart.price
-                            });
-                            console.log(priceProducts, totalPrice);
-                            $(".price").text(priceProducts.toLocaleString('vi-VN'));
-                            totalPrice = priceProducts + 18000
-                            $(".price-total").text(totalPrice.toLocaleString('vi-VN'));
-                            if(itemCount <= 0) {
-                                $('.cart-null').text('Giỏ hàng rỗng');
-                            }
                         })
-
                     }
                 }
             })

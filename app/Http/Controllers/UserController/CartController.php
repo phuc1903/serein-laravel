@@ -109,11 +109,11 @@ class CartController
         return response()->json(['success' => true, 'message' => "Xóa sản phẩm thành công", "newCarts" => $newCarts, 'totalQuantity' => $totalQuantity]);
     }
 
-
     public function updateQuantity(Request $request)
     {
         $productId = $request->product_id;
         $quantity = $request->quantity;
+        $voucher = $request->voucher;
 
         $carts = session()->get('carts', []);
 
@@ -132,6 +132,15 @@ class CartController
 
         $totalCartPrice = $totalPrice + 18000;
 
+        if($voucher !== null) {
+            if($voucher['discount_type'] == "amount") {
+                $totalCartPrice -= intval($voucher['discount_value']); 
+            }else {
+                $totalCartPrice = ($totalCartPrice /100)*intval($voucher['discount_value']);  
+            }
+        }
+
+
         $totalQuantityCart = 0;
 
         foreach($carts as $cart) {
@@ -142,7 +151,8 @@ class CartController
             'totalPriceProduct' => number_format($totalPriceProduct, 0, ',', '.'),
             'totalPrice' => number_format($totalPrice, 0, ',', '.'),
             'totalCartPrice' => number_format($totalCartPrice, 0, ',', '.'),
-            'totalQuantityCart' => $totalQuantityCart
+            'totalQuantityCart' => $totalQuantityCart,
+            'quantity' => $cart['quantity'],
         ]);
     }
 }

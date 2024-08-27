@@ -90,10 +90,12 @@ class AuthController extends Controller
 
         if($user) {
             $voucherWhenRegister = Voucher::where('trigger_event', 'register')->first();
-            VouchersUser::create([
-                'user_id' => $user->id,
-                'voucher_id' => $voucherWhenRegister->id
-            ]);
+            if($voucherWhenRegister) {
+                VouchersUser::create([
+                    'user_id' => $user->id,
+                    'voucher_id' => $voucherWhenRegister->id
+                ]);
+            }
         }
 
         dispatch(new SendCreateAccountMailJob($user));

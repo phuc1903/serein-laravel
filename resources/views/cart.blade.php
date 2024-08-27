@@ -79,8 +79,8 @@
                         <div class="pay__voucher">
                             <label for="" class="text__voucher">Nhập mã giảm giá</label>
                             <div class="value__voucher">
-                                <input type="text" placeholder="Add coupon">
-                                <button type="button">Apply</button>
+                                <input name="code-voucher" id="codeVoucher" type="text" placeholder="Add coupon">
+                                <button id="applyVoucher" data-route="{{ route('voucher.apply' )}}" type="button">Apply</button>
                             </div>
                         </div>
                         <div class="totalprice">
@@ -99,15 +99,23 @@
                                                 }
                                             }
                                         @endphp
-                                        <div class="price">{{ number_format($totalPrice, 0, ',', '.') }}</div>
+                                        <div class="price total-price-product">{{ number_format($totalPrice, 0, ',', '.') }}</div>
                                         <div class="usas">VNĐ</div>
+                                    </div>
+                                </div>
+                                {{-- voucher --}}
+                                <div class="product__price">
+                                    <label class="text">Giảm giá từ voucher</label>
+                                    <div class="box__price">
+                                        <div class="price price_voucher">-0 </div>
+                                        <div class="usas"> VNĐ</div>
                                     </div>
                                 </div>
                                 <!-- ship -->
                                 <div class="product__price">
                                     <label for="" class="text">Phí giao hàng</label>
                                     <div class="box__price">
-                                        <div class="price_ship">18.000</div>
+                                        <div class="price price_ship">18.000</div>
                                         <div class="usas">VNĐ</div>
                                     </div>
                                 </div>
@@ -115,8 +123,7 @@
                                 <div class="product__price">
                                     <label for="" class="text text--bold">Tổng tiền</label>
                                     <div class="box__price">
-                                        <div class="price-total text--bold">
-                                            {{ number_format($totalPrice + 18000, 0, ',', '.') }}</div>
+                                        <div class="price-total text--bold">{{ number_format($totalPrice + 18000, 0, ',', '.') }}</div>
                                         <div class="usas">VNĐ</div>
                                     </div>
                                 </div>
@@ -126,11 +133,11 @@
                                         @csrf
                                         <button type="submit" class="btn__pay"><a>Thanh toán ship Cod</a></button>
                                     </form>
+                                    <form action="{{ route('momo_payment') }}" method="post">
+                                        @csrf
+                                        <button type="submit" class="btn__pay" name="payUrl"><a>Thanh toán momo</a></button>
+                                    </form>
                                 @endif
-                                <form action="{{ route('momo_payment') }}" method="post">
-                                    @csrf
-                                    <button type="submit" class="btn__pay" name="payUrl"><a>Thanh toán momo</a></button>
-                                </form>
                                 <div class="link">
                                     <img src="img/post1.png" alt="">
                                     <img src="img/post1.png" alt="">

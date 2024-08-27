@@ -22,7 +22,7 @@ class ProductFactory extends Factory
         return [
             'title' => $this->faker->sentence,
             'image' => $this->faker->randomElement($images),
-            'price' => $this->faker->numberBetween(1000, 100000),
+            'price' => $this->faker->numberBetween(100000, 100000000),
             'sale' => $this->faker->numberBetween(0, 50),
             'description' => $this->faker->paragraph,
             'detail' => $this->faker->text,

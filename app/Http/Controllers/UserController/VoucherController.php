@@ -5,6 +5,8 @@ namespace App\Http\Controllers\UserController;
 use App\Http\Controllers\Controller;
 use App\Models\VouchersUser;
 use App\Models\Voucher;
+use DateTime;
+use DateTimeZone;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
@@ -39,7 +41,59 @@ class VoucherController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        $code = $request->codeVoucher;
+
+        if($code == "") {
+            return response()->json(['success' => false, 'message' => "Vui lòng nhập mã voucher"]);
+        }
+
+        $codeVoucher = $this->searchVoucher($code, 'order');
+
+
+        if($codeVoucher === false) {
+            return response()->json(['success' => false, 'message' => "Voucher không hợp lệ"]);
+        }
+
+        if($codeVoucher) {
+            $dayNow = $this->GetTimeNow();
+
+            if($dayNow < $codeVoucher->day_start){
+                return response()->json(['success' => false, 'message' => "Voucher chưa đến hạn sử dụng"]);
+            }
+            if  ($dayNow < $codeVoucher->day_start || $codeVoucher->is_active === false) {
+                return response()->json(['success' => false, 'message' => "Voucher đã hết hạn sử dụng"]);
+            }
+            if($codeVoucher->quantity > 0) {
+                return response()->json(['success' => true, 'message' => "Voucher đã được áp dụng", 'voucher' => $codeVoucher]);
+            }else {
+                return response()->json(['success' => false, 'message' => "Số lượng sử dụng voucher đã hết"]);
+            }
+        }else {
+            return response()->json(['success' => false, 'message' => "Voucher không tồn tại"]);
+        }
+    }
+
+    public function searchVoucher($voucher, $event) 
+    {
+        $codeVoucher = strtolower($voucher);
+
+        $voucherByCode = Voucher::whereRaw('LOWER(code) LIKE ?', ['%' . $codeVoucher . '%'])
+                                ->where('trigger_event', $event)
+                                ->first();
+
+        if ($voucherByCode) {
+            return $voucherByCode;
+        } else {
+            return false;
+        }
+    }
+
+    private function GetTimeNow() {
+        $desiredTimeZone = new DateTimeZone('Asia/Ho_Chi_Minh');
+        $currentTime = new DateTime('now', new DateTimeZone('UTC'));
+        $currentTime->setTimezone($desiredTimeZone);
+        $formattedTime = $currentTime->format('Y-m-d H:i:s');
+        return $formattedTime;
     }
 
     /**

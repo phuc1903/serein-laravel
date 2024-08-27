@@ -226,6 +226,10 @@ html {
 
 /* cart */
 
+.cart {
+    padding: 120px 0;
+}
+
 .cart .product__item {
     display: flex;
     justify-content: space-between;

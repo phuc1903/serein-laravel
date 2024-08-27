@@ -144,12 +144,14 @@ $(document).ready(function () {
         var quantity = parseInt(inputQuantity.val()) || 1;
         var productId = $(element).closest('.product__item').data('product-id');
         var route = $(inputQuantity).data('route');
-    
+        const voucher = sessionStorage.getItem('voucher') ? JSON.parse(sessionStorage.getItem('voucher')) : null;
+
         if (action === 'add') {
             quantity += 1;
         } else if (action === 'pre') {
             quantity -= 1;
             if (quantity <= 0) {
+                quantity = 1;
                 Swal.fire({
                     title: 'Số lượng không thể dưới 1',
                     icon: 'warning',
@@ -159,15 +161,12 @@ $(document).ready(function () {
                         popup: 'swal2-custom-size',
                         text: "swal2-text-height",
                     }
-                }).then((result) => {
-                    quantity = 1;
-                    inputQuantity.val(quantity);
-                });
+                })
             }
         }
     
         inputQuantity.val(quantity);
-    
+
         if(route) {
             $.ajax({
                 url: route,
@@ -175,7 +174,8 @@ $(document).ready(function () {
                 data: {
                     _token: $('meta[name="csrf-token"]').attr('content'),
                     product_id: productId,
-                    quantity: quantity
+                    quantity: quantity,
+                    voucher: voucher
                 },
                 success: function(response) {
                     if (response.error) {
@@ -190,8 +190,11 @@ $(document).ready(function () {
                             }
                         });
                     } else {
-                        $(element).closest('.product__item').find('.price__value').text(response.totalPriceProduct);
-                        $('.totalprice .price').text(response.totalPrice);
+                        console.log(response);
+                        
+                        inputQuantity.val(quantity);
+                        $(element).closest('.product__item').find('.price__value').html(response.totalPriceProduct);
+                        $('.totalprice .total-price-product').text(response.totalPrice);
                         $('.totalprice .price-total').text(response.totalCartPrice);
                         $('.totalQuantityCart').html("(" + response.totalQuantityCart +")");
                     }
@@ -256,7 +259,7 @@ $(document).ready(function () {
                         });
                     } else {
                         inputQuantity.closest('.product__item').find('.price__value').text(response.totalPriceProduct);
-                        $('.totalprice .price').text(response.totalPrice);
+                        $('.totalprice .total-price-product').text(response.totalPrice);
                         $('.totalprice .text--bold').text(response.totalCartPrice);
                     }
                 }

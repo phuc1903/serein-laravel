@@ -15,8 +15,8 @@ return new class extends Migration
             $table->id();
             $table->string('title');
             $table->string('image')->nullable();
-            $table->integer('price');
-            $table->integer('sale')->default(0);
+            $table->bigInteger('price');
+            $table->bigInteger('sale')->default(0);
             $table->longText('description')->nullable();
             $table->string('detail')->nullable();
             $table->boolean('status', 1)->default(0);
