@@ -102,7 +102,7 @@ class AuthController extends Controller
 
         Auth::login($user);
 
-        $this->addFavorite(Auth::user());
+        $this->addFavorite($user);
 
         event(new Registered($user));
 

@@ -26,7 +26,7 @@ class OrderFactory extends Factory
             'address' => $this->faker->address,
             'payment_method' => $this->faker->randomElement(['momo', 'cod']),
             'total_price' => 0,  // Tạm thời để 0, sẽ cập nhật sau
-            'status' => $this->faker->randomElement(['Đang giao hàng', 'Đang xét duyệt', 'Giao hàng thành công', 'Đã hủy']),
+            'status' => $this->faker->randomElement(['Đang giao hàng', 'Đang xét duyệt', 'Giao hàng thành công', 'Đã hủy', 'Đã thanh toán']),
             'user_id' => $this->faker->randomElement(User::pluck('id')->toArray()),  // Dùng pluck thay vì select
         ];
     }

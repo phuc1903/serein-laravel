@@ -190,8 +190,6 @@ $(document).ready(function () {
                             }
                         });
                     } else {
-                        console.log(response);
-                        
                         inputQuantity.val(quantity);
                         $(element).closest('.product__item').find('.price__value').html(response.totalPriceProduct);
                         $('.totalprice .total-price-product').text(response.totalPrice);

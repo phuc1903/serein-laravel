@@ -89,26 +89,118 @@
 //     });
 // }
 
-$('#btn-pay').click(function (e) { 
+$('.btn-pay').click(function (e) { 
     e.preventDefault();
-    var check = confirm('Bạn đồng ý thanh toán đơn hàng này');
-    if(check) {
-        $.ajax({
-           type: "GET",
-           url: "/serein/addOrder",
-           dataType: "json",
-           success: function (response) {
-            //    console.log(response);
-               if(response.success) {
-                   window.location.href = "http://localhost/serein/order";
-                   alert(response.message);
-               }else {
-                    alert(response.message);
-               }
-           }
+    const route = $(this).data('route');
+    const type = $(this).attr('name');
+    const voucher = sessionStorage.getItem('voucher') ? JSON.parse(sessionStorage.getItem('voucher')) : null;
+    const user = parseFloat($(this).data('user-id'));
+
+    console.log(!isNaN(user));
+
+    if(!isNaN(user)) {
+        Swal.fire({
+            title: `Bạn đồng ý thanh toán hóa đơn này bằng ${type.toUpperCase()}?`,
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#d33',
+            cancelButtonColor: '#3085d6',
+            confirmButtonText: 'Đồng ý',
+            cancelButtonText: 'Không đồng ý',
+            customClass: {
+                popup: 'swal2-custom-size',
+                text: "swal2-text-height",
+            }
+        }).then((result) => { 
+            
+            if(result.isConfirmed) {
+                
+                let data = {
+                    _token: $('meta[name="csrf-token"]').attr('content'),
+                    type: type,
+                }
+                if(voucher !== null) {
+                    data.voucher = voucher
+                }
+                $.ajax({
+                    type: "POST",
+                    method: "POST",
+                    data: data,
+                    url: route,
+                    dataType: "json",
+                    success: function(response) {
+                        // console.log(response);
+                        
+                        if(response.success) {
+                            if(response.payUrl) {
+                                window.location.href = response.payUrl;
+                            } 
+                            else {
+                                location.reload();
+                            }
+                            Swal.fire({
+                                title: 'Thành công!',
+                                text: response.message,
+                                icon: 'success',
+                                confirmButtonText: 'Đóng'
+                            })
+                        } else {
+                            Swal.fire({
+                                title: 'Thất bại!',
+                                text: response.message,
+                                icon: 'error',
+                                confirmButtonText: 'Đóng'
+                            });
+            
+                        }
+                    },
+                    error: function(xhr, status, error) {
+                        if (xhr.status === 302) {
+                            // Nếu người dùng không được xác thực
+                            Swal.fire({
+                                title: 'Lỗi!',
+                                text: 'Phiên đăng nhập của bạn đã hết hạn, vui lòng đăng nhập lại.',
+                                icon: 'error',
+                                confirmButtonText: 'Đăng nhập'
+                            }).then(() => {
+                                window.location.href = '/login';
+                            });
+                        } 
+                        else if(xhr.status === 403) {
+                            Swal.fire({
+                                title: 'Lỗi!',
+                                text: 'Bạn cần xác minh tài khoản để thực hiện thanh toán.',
+                                icon: 'error',
+                                confirmButtonText: 'Xác minh ngay'
+                            }).then(() => {
+                                window.location.href = '/email/verify'; // Đường dẫn để người dùng xác minh tài khoản
+                            });
+                        }
+                        else {
+                            // Xử lý lỗi khác
+                            Swal.fire({
+                                title: 'Lỗi!',
+                                text: 'Có lỗi xảy ra, vui lòng thử lại.',
+                                icon: 'error',
+                                confirmButtonText: 'Đóng'
+                            });
+                        }
+                    }
+                })
+            }
+        })
+    } 
+    else {
+        Swal.fire({
+            title: 'Thất bại',
+            text: 'Vui lòng đăng nhập để thanh toán.',
+            icon: 'error',
+            confirmButtonText: 'Đóng'
         });
     }
 });
+
+
 
 $('.choice__remove').click(function() {
     var route = $(this).data('route');

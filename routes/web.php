@@ -37,14 +37,18 @@ Route::middleware(['checkAuth', 'verified'])->group(function() {
     });
     
     // Order User
-    Route::resource('order', OrderController::class);
+    Route::resource('order', OrderController::class)->except('order.store');
     
-    Route::post('/momo_payment', [OrderController::class, 'momo_payment'])->name('momo_payment');
+    Route::post('/order', [OrderController::class, 'store'])->name('order.store');
+    Route::get('/order/create', [OrderController::class, 'createOrder'])->name('order.create');
+    
+    // Route::post('/momo_payment', [OrderController::class, 'momo_payment'])->name('momo_payment');
 
     Route::get('/order/detail/{order}', [OrderController::class, 'detail'])->name('order.detail');
 
     // Favorite
 });
+
 
 // Favorite
 Route::controller(FavoriteController::class)->group(function() {
@@ -61,6 +65,7 @@ Route::controller(VoucherController::class)->group(function() {
         Route::delete('/voucher', 'destroy')->name('voucher.destroy');
     });
     Route::post('/voucher', 'store')->name('voucher.apply');
+    Route::delete('/voucher/delete', 'destroyVoucherHasBeenApplied')->name('voucher.destroy.apply');
 });
 
 // Home

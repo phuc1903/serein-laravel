@@ -1232,6 +1232,23 @@ header {
     color: var(--hover-color);
 }
 
+.voucherHasBeenApplied {
+    display: flex;
+    justify-content: space-between;
+    padding: 4px 0;
+    font-size: 1.6rem;
+}
+
+.voucherHasBeenApplied .voucherHasBeenApplied-name{
+    padding: 12px 0;
+}
+
+.voucherHasBeenApplied .voucherHasBeenApplied-delete {
+    color: red;
+    cursor: pointer;
+    padding: 12px;
+}
+
 
 /* About */
 

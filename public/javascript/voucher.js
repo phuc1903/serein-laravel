@@ -6,9 +6,29 @@ $(document).ready(function () {
     updatePriceVoucher();
     updateTotalPrice();
 
+    $('#delete-voucher').click(function() {
+        $route = $(this).data('route');
+        $voucher = $(this).data('voucher');
+
+        console.log(route, voucher);
+        
+
+        // $.ajax({
+        //     url: route,
+        //     method: "DELETE",
+        //     data: {
+        //         _token: $('meta[name="csrf-token"]').attr('content'),
+        //         codeVoucher
+        //     },
+        //     dataType: "json",
+        //     success: function (response) {}
+        // })
+    })
+
     $("#applyVoucher").click(function() {
         const codeVoucher = $("#codeVoucher").val();
         const route = $(this).data('route');
+
         toastr.options = {
             "progressBar": true,
             "closeButton": true,

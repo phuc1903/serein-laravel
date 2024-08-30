@@ -47,7 +47,7 @@ class VoucherController extends Controller
             return response()->json(['success' => false, 'message' => "Vui lòng nhập mã voucher"]);
         }
 
-        $codeVoucher = $this->searchVoucher($code, 'order');
+        $codeVoucher = $this->searchVoucher($code);
 
 
         if($codeVoucher === false) {
@@ -64,7 +64,17 @@ class VoucherController extends Controller
                 return response()->json(['success' => false, 'message' => "Voucher đã hết hạn sử dụng"]);
             }
             if($codeVoucher->quantity > 0) {
-                return response()->json(['success' => true, 'message' => "Voucher đã được áp dụng", 'voucher' => $codeVoucher]);
+                $user = Auth::check() ? Auth::user() : null;
+                if($user) {
+                    $voucherByUser = $this->voucherByUser($codeVoucher, $user);
+                    if($voucherByUser->quantity) {
+                        session()->put('voucher', $codeVoucher);
+                        return response()->json(['success' => true, 'message' => "Voucher đã được áp dụng", 'voucher' => $codeVoucher]);
+                    }
+                    else {
+                        return response()->json(['success' => false, 'message' => 'Hiện tại bạn đã hết số lượt sử dụng voucher']);
+                    }
+                }
             }else {
                 return response()->json(['success' => false, 'message' => "Số lượng sử dụng voucher đã hết"]);
             }
@@ -73,18 +83,31 @@ class VoucherController extends Controller
         }
     }
 
-    public function searchVoucher($voucher, $event) 
+    public function searchVoucher($voucher, $event = "") 
     {
         $codeVoucher = strtolower($voucher);
 
-        $voucherByCode = Voucher::whereRaw('LOWER(code) LIKE ?', ['%' . $codeVoucher . '%'])
-                                ->where('trigger_event', $event)
-                                ->first();
+        $voucherByCode = Voucher::whereRaw('LOWER(code) LIKE ?', ['%' . $codeVoucher . '%'])->first();
 
         if ($voucherByCode) {
             return $voucherByCode;
         } else {
             return false;
+        }
+    }
+
+    public function voucherByUser($voucher, $user) 
+    {
+        if($user) {
+            $voucherByUser = VouchersUser::where('user_id', $user->id)->where('voucher_id', $voucher->id);
+            if($voucherByUser) {
+                return $voucherByUser;
+            }
+            else {
+                return response()->json(['success' => false, 'message' => 'Bạn không có voucher này']);
+            }
+        }else {
+            return response()->json(['success' => false, 'message' => 'Tài khoản không tồn tại']);
         }
     }
 
@@ -133,5 +156,12 @@ class VoucherController extends Controller
         else {
             return response()->json(['success' => false, 'message' => 'Xin lỗi, có vẻ hệ thống đã có lỗi']);
         }
+    }
+
+    public function destroyVoucherHasBeenApplied(Request $request)
+    {
+        $request->session()->forget('voucher');
+
+        return response()->json(['status' => 'success']);
     }
 }

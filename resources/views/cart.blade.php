@@ -111,6 +111,19 @@
                                         <div class="usas"> VNĐ</div>
                                     </div>
                                 </div>
+                                @php
+                                    $voucher = session()->get('voucher');
+                                @endphp
+                                @if ($voucher)
+                                    <div class="voucherHasBeenApplied">
+                                        <div class="voucherHasBeenApplied-name">
+                                            {{ $voucher->name }}
+                                        </div>
+                                        <div id="delete-voucher" data-voucher="{{ $voucher }}" data-route="{{ route('voucher.destroy.apply')}}" class="voucherHasBeenApplied-delete">
+                                            <i class="fa-solid fa-xmark"></i>
+                                        </div>
+                                    </div>
+                                @endif
                                 <!-- ship -->
                                 <div class="product__price">
                                     <label for="" class="text">Phí giao hàng</label>
@@ -129,14 +142,8 @@
                                 </div>
                                 <!-- button thanh toan -->
                                 @if ($products != null)
-                                    <form action="{{ route('order.store') }}" method="post">
-                                        @csrf
-                                        <button type="submit" class="btn__pay"><a>Thanh toán ship Cod</a></button>
-                                    </form>
-                                    <form action="{{ route('momo_payment') }}" method="post">
-                                        @csrf
-                                        <button type="submit" class="btn__pay" name="payUrl"><a>Thanh toán momo</a></button>
-                                    </form>
+                                    <button type="submit" data-route="{{ route('order.store') }}" data-user-id="{{Auth::check()}}" name="cod" class="btn__pay btn-pay"><a>Thanh toán ship Cod</a></button>
+                                    <button type="submit" data-route="{{ route('order.store') }}" data-user-id="{{Auth::check()}}" name="momo" class="btn__pay btn-pay" ><a>Thanh toán momo</a></button>
                                 @endif
                                 <div class="link">
                                     <img src="img/post1.png" alt="">

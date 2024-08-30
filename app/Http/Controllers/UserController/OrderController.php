@@ -8,6 +8,7 @@ use App\Models\Order;
 use App\Models\OrderDetail;
 use App\Models\Product;
 use App\Models\User;
+use App\Models\VouchersUser;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Gate;
@@ -54,61 +55,173 @@ class OrderController extends Controller
     public function store(Request $request)
     {
         $carts = session()->get('carts');
+        $user = Auth::user();
 
+        if(!Auth::check()) {
+            return response()->json(['success' => false, 'message' => 'Vui lòng đăng nhập để thanh toán']);
+        }
+        
+        $error =  $this->validatedUser($user);
+
+        if($error !== null) return $error;
+        
         if (isset($carts)) {
-            if (Auth::check()) {
-                $user = Auth::user();
-                if (!$user->phone) {
-                    return redirect()->route('info')->with('error', 'Vui lòng nhập số điện thoại và đầy đủ thông tin');
-                }
-                if (!$user->address) {
-                    return redirect()->route('info')->with('error', 'Vui lòng nhập địa chỉ và đầy đủ thông tin');
-                }
-                if (!$user->name) {
-                    return redirect()->route('info')->with('error', 'Vui lòng nhập tên và đầy đủ thông tin');
-                }
-                if (!$user->email) {
-                    return redirect()->route('info')->with('error', 'Vui lòng nhập email và đầy đủ thông tin');
-                }
+            $totalPriceOrder = 0;
+            $totalPriceOrder += 18000; // Phí vận chuyển
+            foreach($carts as $cart) {
+                $totalPriceOrder += (intval($cart['price']) * intval($cart['quantity']));
+            }
 
-                $totalPriceOrder = 0;
-                foreach($carts as $cart) {
-                    $totalPriceOrder += $cart['price'];
-                }
+            $voucher = $request->voucher;
 
-                $order = Order::create([
-                    'user_id' => $user->id,
-                    'name' => $user->name,
-                    'phone' => $user->phone,
-                    'address' => $user->address,
-                    'status' => "Đang xét duyệt",
-                    'payment_method' => "cod",
-                    'total_price' => $totalPriceOrder,
-                ]);
+            if($voucher) {
+                $voucherByUser = VouchersUser::where('user_id', $user->id)->where('voucher_id', $voucher['id'])->first();
+                if($voucherByUser) {
+                    if($voucherByUser->quantity >=1) {
 
-                foreach ($carts as $cart) {
-                    $orderDetails = OrderDetail::create([
-                        'order_id' => $order->id,
-                        'product_id' => $cart['product_id'],
-                        'quantity' => $cart['quantity'],
-                        'price' => $cart['price'],
-                    ]);
-                }
-
-                $orderMail = [$user, $order];
-                if($orderMail) {
-                    dispatch(new SendNewOrderMailJob($orderMail));
-                }
-                if ($orderDetails && $order) {
-                    $cartsDelete = session()->pull('carts');
-                    if ($cartsDelete) {
-                        // dd($orderMail);
-                        return redirect()->back()->with('success', 'Đơn hàng đã đặt thành công, Chờ xét duyệt');
+                    }else {
+                        return response()->json(['']);
+                    }
+                }else {
+                    if ($voucher['discount_type'] === "amount") {
+                        $totalPriceOrder -= intval($voucher['discount_value']);
+                    }
+                    else if ($voucher['discount_type'] === "percent") {
+                        $totalPriceOrder -= ($totalPriceOrder * (intval($voucher['discount_value']) / 100));
                     }
                 }
             }
+
+            try {
+                if($request->type === "cod") {
+                    return $this->cod_payment($totalPriceOrder, $user, $request->type, $carts);
+                }else if($request->type === "momo") {
+                    return $this->momo_payment($totalPriceOrder, $user, $request->type, $carts);
+                }
+            } catch (\Exception $e) {
+                return response()->json(['success' => false, 'message' => 'Có lỗi xảy ra trong quá trình thanh toán.']);
+            }
+        }
+        return response()->json(['success' => false, 'message' => 'Giỏ hàng của bạn đang trống.']);
+    }
+  
+    private function validatedUser($user) 
+    {
+        if ($user) {
+            if (!$user->phone) {
+                return response()->json(['success' => false, 'message' => 'Vui lòng nhập số điện thoại và đầy đủ thông tin']);
+            }
+            if (!$user->address) {
+                return response()->json(['success' => false, 'message' => 'Vui lòng nhập địa chỉ và đầy đủ thông tin']);
+            }
+            if (!$user->name) {
+                return response()->json(['success' => false, 'message' => 'Vui lòng nhập tên và đầy đủ thông tin']);
+            }
+            if (!$user->email) {
+                return response()->json(['success' => false, 'message' => 'Vui lòng nhập email và đầy đủ thông tin']);
+            }
+            return null;
+        }else {
+            return response()->json(['success' => false, 'message' => 'Vui lòng đăng nhập để thanh toán']);
         }
     }
+
+    public function cod_payment($totalPriceOrder, $user, $method, $carts)
+    {
+        $order = Order::create([
+            'user_id' => $user->id,
+            'name' => $user->name,
+            'phone' => $user->phone,
+            'address' => $user->address,
+            'status' => "Đang xét duyệt",
+            'payment_method' => $method,
+            'total_price' => $totalPriceOrder,
+        ]);
+
+        foreach ($carts as $cart) {
+            $orderDetails = OrderDetail::create([
+                'order_id' => $order->id,
+                'product_id' => $cart['product_id'],
+                'quantity' => $cart['quantity'],
+                'price' => $cart['price'],
+            ]);
+        }
+        $orderMail = [$user, $order];
+        
+        if($orderMail) {
+            dispatch(new SendNewOrderMailJob($orderMail));
+        }
+
+        if ($orderDetails && $order) {
+            session()->pull('carts');
+            return response()->json(['success' => true, 'messsage', 'Đơn hàng đã đặt thành công, Chờ xét duyệt']);
+        }
+        return response()->json(['success' => false, 'message' => "Đang có lỗi trong thanh toán, Bạn vui lòng đợi"]);
+    }
+
+    public function momo_payment($totalPriceOrder, $user, $method, $carts) 
+    {
+        $order = Order::create([
+            'user_id' => $user->id,
+            'name' => $user->name,
+            'phone' => $user->phone,
+            'address' => $user->address,
+            'status' => "Đang xét duyệt",
+            'payment_method' => $method,
+            'total_price' => $totalPriceOrder,
+        ]);
+
+        foreach ($carts as $cart) {
+            $orderDetails = OrderDetail::create([
+                'order_id' => $order->id,
+                'product_id' => $cart['product_id'],
+                'quantity' => $cart['quantity'],
+                'price' => $cart['price'],
+            ]);
+        }
+
+        // session()->pull('carts');
+
+        $endpoint = "https://test-payment.momo.vn/v2/gateway/api/create";
+        $partnerCode = env('MOMO_PARTNERCODE');
+        $accessKey = env('MOMO_ACCESSKEY');
+        $secretKey = env('MOMO_SERCETKEY');
+        $orderInfo = "Thanh toán qua MoMo";
+        $amount = $totalPriceOrder;
+        $orderId = time() . "";
+        $redirectUrl = route('order.create',['order' => $order->id, 'user' => $user->id]);
+        $ipnUrl = route('order.index');
+        $extraData = "";
+
+        $requestId = time() . "";
+        $requestType = "payWithATM";
+        $rawHash = "accessKey=" . $accessKey . "&amount=" . $amount . "&extraData=" . $extraData . "&ipnUrl=" . $ipnUrl . "&orderId=" . $orderId . "&orderInfo=" . $orderInfo . "&partnerCode=" . $partnerCode . "&redirectUrl=" . $redirectUrl . "&requestId=" . $requestId . "&requestType=" . $requestType;
+        $signature = hash_hmac("sha256", $rawHash, $secretKey);
+        $data = array(
+            'partnerCode' => $partnerCode,
+            'partnerName' => "Test",
+            "storeId" => "MomoTestStore",
+            'requestId' => $requestId,
+            'amount' => $amount,
+            'orderId' => $orderId,
+            'orderInfo' => $orderInfo,
+            'redirectUrl' => $redirectUrl,
+            'ipnUrl' => $ipnUrl,
+            'lang' => 'vi',
+            'extraData' => $extraData,
+            'requestType' => $requestType,
+            'signature' => $signature
+        );
+        $result = $this->execPostRequest($endpoint, json_encode($data));
+        $jsonResult = json_decode($result, true);
+
+        if($jsonResult['resultCode'] !== 0 ) {
+            return response()->json(['success' => false, 'message' => $jsonResult['message']]);
+        }
+        
+        return response()->json(['success' => true, 'payUrl' => $jsonResult['payUrl'], 'message' => 'Đơn hàng đã được tạo thành công, chuyển hướng đến MoMo để thanh toán.']);
+    }
+
 
     public function execPostRequest($url, $data)
     {
@@ -129,100 +242,16 @@ class OrderController extends Controller
         return $result;
     }
 
-    public function momo_payment(Request $request) 
+    public function createOrder(Request $request)
     {
-        $carts = session()->get('carts');
-        if (isset($carts)) {
-            if (Auth::check()) {
-                $user = Auth::user();
-                if (!$user->phone) {
-                    return redirect()->route('info')->with('error', 'Vui lòng nhập số điện thoại và đầy đủ thông tin');
-                }
-                if (!$user->address) {
-                    return redirect()->route('info')->with('error', 'Vui lòng nhập địa chỉ và đầy đủ thông tin');
-                }
-                if (!$user->name) {
-                    return redirect()->route('info')->with('error', 'Vui lòng nhập tên và đầy đủ thông tin');
-                }
-                if (!$user->email) {
-                    return redirect()->route('info')->with('error', 'Vui lòng nhập email và đầy đủ thông tin');
-                }
-                
-                $totalPriceOrder = 0;
-                foreach($carts as $cart) {
-                    $totalPriceOrder += $cart['price'];
-                }
+        $order = Order::findOrFail($request->order); 
+        $order->update(['status' => "Đã thanh toán"]);
+        session()->pull('carts');
+        $user = User::findOrFail($request->user);
 
-                $order = Order::create([
-                    'user_id' => $user->id,
-                    'name' => $user->name,
-                    'phone' => $user->phone,
-                    'address' => $user->address,
-                    'status' => "Đang xét duyệt",
-                    'payment_method' => "momo",
-                    'total_price' => $totalPriceOrder,
-                ]);
+        dispatch(new SendNewOrderMailJob([$user, $order]));
 
-                foreach ($carts as $cart) {
-                    $orderDetails = OrderDetail::create([
-                        'order_id' => $order->id,
-                        'product_id' => $cart['product_id'],
-                        'quantity' => $cart['quantity'],
-                        'price' => $cart['price'],
-                    ]);
-                }
-
-                
-
-                $endpoint = "https://test-payment.momo.vn/v2/gateway/api/create";
-
-
-                $partnerCode = env('MOMO_PARTNERCODE');
-                $accessKey = env('MOMO_ACCESSKEY');
-                $secretKey = env('MOMO_SERCETKEY');
-                $orderInfo = "Thanh toán qua MoMo";
-                $amount = $totalPriceOrder;
-                $orderId = time() . "";
-                $redirectUrl = route('order.index');
-                $ipnUrl = route('order.index');
-                $extraData = "";
-
-                $requestId = time() . "";
-                $requestType = "payWithATM";
-                // $extraData = ($_POST["extraData"] ? $_POST["extraData"] : "");
-                //before sign HMAC SHA256 signature
-                $rawHash = "accessKey=" . $accessKey . "&amount=" . $amount . "&extraData=" . $extraData . "&ipnUrl=" . $ipnUrl . "&orderId=" . $orderId . "&orderInfo=" . $orderInfo . "&partnerCode=" . $partnerCode . "&redirectUrl=" . $redirectUrl . "&requestId=" . $requestId . "&requestType=" . $requestType;
-                $signature = hash_hmac("sha256", $rawHash, $secretKey);
-                // dd($signature);
-                $data = array('partnerCode' => $partnerCode,
-                    'partnerName' => "Test",
-                    "storeId" => "MomoTestStore",
-                    'requestId' => $requestId,
-                    'amount' => $amount,
-                    'orderId' => $orderId,
-                    'orderInfo' => $orderInfo,
-                    'redirectUrl' => $redirectUrl,
-                    'ipnUrl' => $ipnUrl,
-                    'lang' => 'vi',
-                    'extraData' => $extraData,
-                    'requestType' => $requestType,
-                    'signature' => $signature);
-                $result = $this->execPostRequest($endpoint, json_encode($data));
-                $jsonResult = json_decode($result, true);  // decode json
-                
-                $orderMail = [$user, $order];
-                if($orderMail) {
-                    dispatch(new SendNewOrderMailJob($orderMail));
-                }
-                if ($orderDetails && $order) {
-                    $cartsDelete = session()->pull('carts');
-                    if ($cartsDelete) {
-                        // dd($orderMail);
-                        return redirect()->to($jsonResult['payUrl'])->with('success', 'Thanh toán thành công');
-                    }
-                }
-            }
-        }
+        return redirect()->route('order.index')->with('success', 'Bạn đã thanh toán thành công');
     }
 
     /**
